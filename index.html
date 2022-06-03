@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelator</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<main>
+    <div class="columns">
+        <div class="colMain">
+            <input type="file" id="maskFile" accept="image/*">
+            <button id="maskBtn">Upload Mask</button>
+            <canvas id="maskCanvas"></canvas>
+        </div>
+        <div class="colMain">
+            <input type="file" id="originalFile" accept="image/*">
+            <button id="originalBtn">Upload Original</button>
+            <canvas id="originalCanvas"></canvas>
+        </div>
+        <div class="colMain">
+            <div id="pixelatedSpacer"></div>
+            <canvas id="pixelatedCanvas"></canvas>
+        </div>
+        <div id="modalShade"></div>
+        <div id="modalWrap">
+            <canvas id="modalCanvas"></canvas>
+        </div>
+    </div>
+    <div id="colorPanel">
+        <div id="panelHeader">
+            <div class="colColorRanges" id="header_1"></div>
+            <div class="colColorRanges" id="header_2">
+                <div class="colorSquare" id="black" data-hex="#000000"></div>
+            </div>
+            <div class="colColorRanges" id="header_3">
+                <div class="colorSquare dither" id="blackDither" data-hex="#404040"></div>
+            </div>
+            <div class="colColorRanges" id="header_4">
+                <div class="colorSquare" id="darkGray" data-hex="#808080"></div>
+            </div>
+            <div class="colColorRanges" id="header_5">
+                <div class="colorSquare dither" id="darkGrayDither" data-hex="#A0A0A0"></div>
+            </div>
+            <div class="colColorRanges" id="header_6">
+                <div class="colorSquare" id="lightGray" data-hex="#C0C0C0"></div>
+            </div>
+            <div class="colColorRanges" id="header_7">
+                <div class="colorSquare dither" id="lightGrayDither" data-hex="#E0E0E0"></div>
+            </div>
+            <div class="colColorRanges" id="header_8">
+                <div class="colorSquare" id="white" data-hex="#FFFFFF"></div>
+            </div>
+        </div>
+        <div id="colorRanges">
+            <div class="colColorRanges" id="colColorRanges_1"></div>
+            <div class="colColorRanges" id="colColorRanges_2"></div>
+            <div class="colColorRanges" id="colColorRanges_3"></div>
+            <div class="colColorRanges" id="colColorRanges_4"></div>
+            <div class="colColorRanges" id="colColorRanges_5"></div>
+            <div class="colColorRanges" id="colColorRanges_6"></div>
+            <div class="colColorRanges" id="colColorRanges_7"></div>
+            <div class="colColorRanges" id="colColorRanges_8"></div>
+        </div>
+        <button id="generateBtn">Generate</button>
+    </div>
+    <canvas id="ditheredCanvas"></canvas>
+</main>
+<script type="text/javascript" src="script.js"></script>
+</body>
+</html>
