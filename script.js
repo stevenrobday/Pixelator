@@ -14,7 +14,8 @@ const maskFile = document.getElementById('maskFile'),
     pixelatedCanvas = document.getElementById('pixelatedCanvas'),
     pixelatedCtx = pixelatedCanvas.getContext('2d'),
     ditheredCanvas = document.getElementById('ditheredCanvas'),
-    ditheredCtx = ditheredCanvas.getContext('2d');
+    ditheredCtx = ditheredCanvas.getContext('2d'),
+    hoverPixelVal = document.getElementById('hoverPixelVal');
 
 let maskData,
     eyedropperObj = {},
@@ -43,24 +44,12 @@ originalBtn.addEventListener('click', e => {
 });
 
 modalWrap.addEventListener('click', function (e) {
-    if (e.target.nodeName !== "CANVAS") {
-        closeModal();
-    }
+    if (e.target.nodeName !== "CANVAS") closeModal();
 });
 
 modalCanvas.addEventListener('mousedown', e => {
     resetHover();
-    let pos;
-    if (zoomOrigin.x === 0 && zoomOrigin.y === 0 && scale === 1) pos = getCoords(e);
-    else {
-        let transformX = Math.abs(zoomOrigin.x / scale);
-        let transformY = Math.abs(zoomOrigin.y / scale);
-        let offsetX = e.offsetX * modalCanvas.width / modalCanvas.clientWidth / scale;
-        let offsetY = e.offsetY * modalCanvas.height / modalCanvas.clientHeight / scale;
-        let x = Math.floor(transformX + offsetX);
-        let y = Math.floor(transformY + offsetY);
-        pos = {x, y};
-    }
+    const pos = getPosition(e);
 
     closeModal();
 
@@ -112,25 +101,21 @@ modalCanvas.addEventListener('mousemove', e => {
     clearTimeout(mouseTimeout);
     resetHover();
 
-    let mouseStopped = pos => {
-        let pixel = modalCtx.getImageData(pos.x, pos.y, 1, 1);
-        let data = pixel.data;
-
-        if (data[3] !== 0) {
-            resetHoverObj = {
-                pos: pos,
-                data: data
-            };
-
-            fillPixel(modalCtx, "#f1e740", pos.x, pos.y);
-        }
-    };
     mouseTimeout = setTimeout(function () {
         if (modalOpen) { // avoid console error
             let pos = getCoords(e);
-            mouseStopped(pos);
+            const pixel = modalCtx.getImageData(pos.x, pos.y, 1, 1);
+            const data = pixel.data;
+            if (data[3]  === 255) {
+                mouseStopped(pos, data);
+                showPixelVal(e, pos);
+            }
         }
     }, 300);
+});
+
+modalCanvas.addEventListener('mouseleave', e => {
+    clearTimeout(mouseTimeout);
 });
 
 generateBtn.addEventListener("click", e => {
@@ -200,7 +185,6 @@ function maskUploaded() {
     input.type = "number";
     input.setAttribute("min", "0");
     input.setAttribute("max", "255");
-    input.classList.add("inputs");
 
     const eyedropper = document.createElement("img");
     eyedropper.classList.add("eyedropper");
@@ -376,13 +360,35 @@ function closeModal() {
 }
 
 function resetHover() {
-    if (resetHoverObj.hasOwnProperty('pos')) {
+    if (Object.keys(resetHoverObj).length) {
         let data = resetHoverObj.data;
         let pos = resetHoverObj.pos;
         resetHoverObj = {};
 
         fillPixel(modalCtx, `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`, pos.x, pos.y);
+        hoverPixelVal.textContent = '';
     }
+}
+
+function mouseStopped(pos, data) {
+    resetHoverObj = {pos, data};
+    fillPixel(modalCtx, "#f1e740", pos.x, pos.y);
+}
+
+function showPixelVal(e) {
+    const pos = getPosition(e);
+    const pixel = originalCtx.getImageData(pos.x, pos.y, 1, 1);
+    const pixelData = pixel.data;
+    hoverPixelVal.textContent = `${pixelData[0]}`;
+    const offset = modalCanvas.getBoundingClientRect();
+    let x = e.offsetX + offset.left - hoverPixelVal.offsetWidth / 2;
+    let y = e.offsetY - 20;
+    if (y < 0) {
+        x -= 20;
+        y = e.offsetY + 4;
+    }
+    hoverPixelVal.style.left = x + 'px';
+    hoverPixelVal.style.top = y + 'px';
 }
 
 function fillPixel(ctx, color, x, y) {
@@ -392,11 +398,26 @@ function fillPixel(ctx, color, x, y) {
     ctx.restore();
 }
 
+function getPosition(e) {
+    if (zoomOrigin.x === 0 && zoomOrigin.y === 0 && scale === 1) return getCoords(e);
+    return getScaledCoords(zoomOrigin, scale, e);
+}
+
 function getCoords(e) {
     let pos = {};
     pos.x = Math.floor(e.offsetX * modalCanvas.width / modalCanvas.clientWidth);
     pos.y = Math.floor(e.offsetY * modalCanvas.height / modalCanvas.clientHeight);
     return pos;
+}
+
+function getScaledCoords(zoomOrigin, scale, e) {
+    let transformX = Math.abs(zoomOrigin.x / scale);
+    let transformY = Math.abs(zoomOrigin.y / scale);
+    let offsetX = e.offsetX * modalCanvas.width / modalCanvas.clientWidth / scale;
+    let offsetY = e.offsetY * modalCanvas.height / modalCanvas.clientHeight / scale;
+    let x = Math.floor(transformX + offsetX);
+    let y = Math.floor(transformY + offsetY);
+    return {x, y};
 }
 
 function originalUploaded() {
