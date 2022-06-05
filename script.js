@@ -423,9 +423,18 @@ function generateRow(maskHex, row) {
         const header = `#header_${i}`;
         const col = `#colColorRanges_${i}`;
         const fields = document.querySelector(`${col} > :nth-child(${row})`);
+        let ditherObj;
         if (i % 2 === 1) {
             const checkbox = fields.querySelector(`input[type="checkbox"]`);
             if (!checkbox.checked) continue;
+
+            let header = `#header_${i - 1}`;
+            let colColor = document.querySelector(`${header} > :first-child`);
+            const darkHex = colColor.dataset.hex;
+            header = `#header_${i + 1}`;
+            colColor = document.querySelector(`${header} > :first-child`);
+            const lightHex = colColor.dataset.hex;
+            ditherObj = {darkHex, lightHex};
         }
         const firstInput = fields.querySelector(`input[data-pos="first"]`);
         const lastInput = fields.querySelector(`input[data-pos="last"]`);
@@ -433,9 +442,12 @@ function generateRow(maskHex, row) {
         const lastInputVal = parseInt(lastInput.value.trim());
         if (Number.isInteger(firstInputVal) && Number.isInteger(lastInputVal)
             && firstInputVal >= 0 && firstInputVal <= 255 && lastInputVal >= 0 && lastInputVal <= 255) {
-            const colColor = document.querySelector(`${header} > :first-child`);
-            const fillHex = colColor.dataset.hex;
-            valArray.push({firstInputVal, lastInputVal, fillHex});
+            let fillHex;
+            if (i % 2 === 0) {
+                const colColor = document.querySelector(`${header} > :first-child`);
+                fillHex = colColor.dataset.hex;
+            }
+            valArray.push({firstInputVal, lastInputVal, fillHex, ditherObj});
         }
     }
     const coordsArray = maskData[`${maskHex}`];
@@ -449,27 +461,16 @@ function generateRow(maskHex, row) {
         const ditheredPixel = ditheredCtx.getImageData(x, y, 1, 1);
         const ditheredPixelVal = ditheredPixel.data[0];
         valArray.every(e => {
-            const fillHex = e.fillHex;
             if (pixelVal >= e.firstInputVal && pixelVal <= e.lastInputVal) {
-                if (fillHex === "#000000" || fillHex === "#808080" || fillHex === "#C0C0C0" || fillHex === "#FFFFFF")
+                const fillHex = e.fillHex;
+                if (fillHex)
                     fillPixel(pixelatedCtx, fillHex, x, y);
                 else {
-                    let ditheredFillHex;
-                    switch (fillHex) {
-                        case "#404040":
-                            if (ditheredPixelVal) ditheredFillHex = "#808080";
-                            else ditheredFillHex = "#000000"
-                            break;
-                        case "#A0A0A0":
-                            if (ditheredPixelVal) ditheredFillHex = "#C0C0C0";
-                            else ditheredFillHex = "#808080";
-                            break;
-                        case "#E0E0E0":
-                            if (ditheredPixelVal) ditheredFillHex = "#FFFFFF";
-                            else ditheredFillHex = "#C0C0C0";
-                            break;
-                    }
-                    fillPixel(pixelatedCtx, ditheredFillHex, x, y);
+                    const ditherObj = e.ditherObj;
+                    if (ditheredPixelVal)
+                        fillPixel(pixelatedCtx, ditherObj.lightHex, x, y);
+                    else
+                        fillPixel(pixelatedCtx, ditherObj.darkHex, x, y);
                 }
                 return false;
             }
