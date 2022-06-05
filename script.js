@@ -463,18 +463,11 @@ function generateRow(maskHex, row) {
         valArray.every(e => {
             if (pixelVal >= e.firstInputVal && pixelVal <= e.lastInputVal) {
                 const fillHex = e.fillHex;
-                if (fillHex)
-                    fillPixel(pixelatedCtx, fillHex, x, y);
-                else {
-                    const ditherObj = e.ditherObj;
-                    if (ditheredPixelVal)
-                        fillPixel(pixelatedCtx, ditherObj.lightHex, x, y);
-                    else
-                        fillPixel(pixelatedCtx, ditherObj.darkHex, x, y);
-                }
+                if (fillHex) fillPixel(pixelatedCtx, fillHex, x, y);
+                else if (ditheredPixelVal) fillPixel(pixelatedCtx, e.ditherObj.lightHex, x, y);
+                else fillPixel(pixelatedCtx, e.ditherObj.darkHex, x, y);
                 return false;
             }
-
             return true;
         });
     }
