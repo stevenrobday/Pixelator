@@ -95,23 +95,12 @@ modalCanvas.addEventListener('wheel', e => {
         modalCtx.restore();
     }
     oldScale = scale;
+
+    mouseMoved(e);
 });
 
 modalCanvas.addEventListener('mousemove', e => {
-    clearTimeout(mouseTimeout);
-    resetHover();
-
-    mouseTimeout = setTimeout(function () {
-        if (modalOpen) { // avoid console error
-            let pos = getCoords(e);
-            const pixel = modalCtx.getImageData(pos.x, pos.y, 1, 1);
-            const data = pixel.data;
-            if (data[3]  === 255) {
-                mouseStopped(pos, data);
-                showPixelVal(e, pos);
-            }
-        }
-    }, 300);
+    mouseMoved(e);
 });
 
 modalCanvas.addEventListener('mouseleave', e => {
@@ -370,7 +359,25 @@ function resetHover() {
     }
 }
 
-function mouseStopped(pos, data) {
+function mouseMoved(e) {
+    clearTimeout(mouseTimeout);
+    resetHover();
+    mouseTimeout = setTimeout(function() {mouseStopped(e)}, 300);
+}
+
+function mouseStopped(e) {
+    if (modalOpen) { // avoid console error
+        let pos = getCoords(e);
+        const pixel = modalCtx.getImageData(pos.x, pos.y, 1, 1);
+        const data = pixel.data;
+        if (data[3]  === 255) {
+            highlightPixel(pos, data);
+            showPixelVal(e, pos);
+        }
+    }
+}
+
+function highlightPixel(pos, data) {
     resetHoverObj = {pos, data};
     fillPixel(modalCtx, "#f1e740", pos.x, pos.y);
 }
