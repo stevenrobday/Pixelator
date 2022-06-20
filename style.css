@@ -59,6 +59,7 @@ canvas {
     display: flex;
     width: 90%;
     overflow-y: scroll;
+    margin-bottom: 10px;
 }
 
 .colColorRanges {
@@ -128,6 +129,10 @@ input[type=number] {
     margin: auto 2px;
 }
 
+input[type=number]::-webkit-inner-spin-button {
+    cursor: pointer;
+}
+
 .eyedropper {
     width: 22px;
     height: 22px;
@@ -155,7 +160,16 @@ input[type=checkbox] {
     margin-right: 16px;
 }
 
-#generateBtn, #originalBtn {
+#panelButtons {
+    display: flex;
+    justify-content: center;
+}
+
+#panelButtons button {
+    margin: 0 20px;
+}
+
+#originalBtn {
     visibility: hidden;
 }
 
@@ -190,6 +204,7 @@ input[type=checkbox] {
     width: auto;
 }
 
-input[type=number]::-webkit-inner-spin-button {
-    cursor: pointer;
+#hoverPixelVal {
+    position: absolute;
+    color: red;
 }

@@ -26,6 +26,7 @@
         <div id="modalShade"></div>
         <div id="modalWrap">
             <canvas id="modalCanvas"></canvas>
+            <div id="hoverPixelVal"></div>
         </div>
     </div>
     <div id="colorPanel">
@@ -63,7 +64,12 @@
             <div class="colColorRanges" id="colColorRanges_7"></div>
             <div class="colColorRanges" id="colColorRanges_8"></div>
         </div>
-        <button id="generateBtn">Generate</button>
+        <div id="panelButtons">
+            <input type="file" id="csvFile" accept="text/csv">
+            <button id="importBtn">Import</button>
+            <button id="exportBtn">Export</button>
+            <button id="generateBtn">Generate</button>
+        </div>
     </div>
     <canvas id="ditheredCanvas"></canvas>
 </main>

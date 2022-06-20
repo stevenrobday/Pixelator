@@ -2,6 +2,9 @@ const maskFile = document.getElementById('maskFile'),
     maskBtn = document.getElementById('maskBtn'),
     maskCanvas = document.getElementById('maskCanvas'),
     maskCtx = maskCanvas.getContext('2d'),
+    csvFile = document.getElementById('csvFile'),
+    importBtn = document.getElementById('importBtn'),
+    exportBtn = document.getElementById('exportBtn'),
     generateBtn = document.getElementById('generateBtn'),
     originalFile = document.getElementById('originalFile'),
     originalBtn = document.getElementById('originalBtn'),
@@ -24,8 +27,7 @@ let maskData,
     scale = 1,
     zoomOrigin = {x: 0, y: 0},
     oldScale = 1,
-    modalOpen = false,
-    originalExists = false;
+    modalOpen = false;
 
 maskFile.addEventListener('change', e => {
     drawImageToCanvas(e, maskCanvas, maskCtx);
@@ -107,6 +109,98 @@ modalCanvas.addEventListener('mouseleave', e => {
     clearTimeout(mouseTimeout);
 });
 
+//modified from https://sebhastian.com/javascript-csv-to-array/
+csvFile.addEventListener('change', e => {
+    const input = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        const text = event.target.result;
+
+        const headers = text.slice(0, text.indexOf("\n")).split(",");
+
+        const rows = text.slice(text.indexOf("\n") + 1).split("\n");
+
+        const csvArray = rows.map(function (row) {
+            const values = row.split(",");
+            return headers.reduce(function (object, header, index) {
+                object[header] = values[index];
+                return object;
+            }, {});
+        });
+
+        csvArray.forEach(el => {
+            const colorSquare = document.querySelector(`#colColorRanges_1 > div[data-hex="${el.hex}"]`);
+            const row = Array.from(colorSquare.parentNode.children).indexOf(colorSquare) + 1;
+            for (let i = 2; i <= 8; i++) {
+                const colEl = `#colColorRanges_${i}`;
+                const fields = document.querySelector(`${colEl} > :nth-child(${row})`);
+                const firstInput = fields.querySelector(`input[data-pos="first"]`);
+                const lastInput = fields.querySelector(`input[data-pos="last"]`);
+                const firstInputVal = parseInt(el[`col_${i}_first`]);
+                const lastInputVal = parseInt(el[`col_${i}_last`]);
+                if (Number.isInteger(firstInputVal) && firstInputVal >= 0 && firstInputVal <= 255) firstInput.value = firstInputVal;
+                if (Number.isInteger(lastInputVal) && lastInputVal >= 0 && lastInputVal <= 255) lastInput.value = lastInputVal;
+                if (i % 2 === 1) {
+                    const checkbox = fields.querySelector(`input[type="checkbox"]`);
+                    if (el[`col_${i}_checkbox`] === "true") {
+                        checkbox.checked = true;
+                        firstInput.disabled = false;
+                        lastInput.disabled = false;
+                    }
+                    else {
+                        checkbox.checked = false;
+                        firstInput.disabled = true;
+                        lastInput.disabled = true;
+                    }
+                }
+            }
+        });
+    };
+
+    reader.readAsText(input);
+});
+
+importBtn.addEventListener('click', e => {
+    csvFile.click();
+});
+
+exportBtn.addEventListener("click", e => {
+    const csvArray = [
+        ["hex", "col_2_first", "col_2_last", "col_3_first", "col_3_last", "col_3_checkbox", "col_4_first", "col_4_last", "col_5_first", "col_5_last", "col_5_checkbox",
+            "col_6_first", "col_6_last", "col_7_first", "col_7_last", "col_7_checkbox", "col_8_first", "col_8_last"]
+    ];
+
+    let row = 1;
+    for (const hex in maskData) {
+        const colorSquare = document.querySelector(`#colColorRanges_1 > :nth-child(${row})`);
+        const csvRowArray = [colorSquare.dataset.hex];
+        for (let i = 2; i <= 8; i++) {
+            const colEl = `#colColorRanges_${i}`;
+            const fields = document.querySelector(`${colEl} > :nth-child(${row})`);
+            const firstInput = fields.querySelector(`input[data-pos="first"]`);
+            const lastInput = fields.querySelector(`input[data-pos="last"]`);
+            const firstInputVal = parseInt(firstInput.value.trim());
+            const lastInputVal = parseInt(lastInput.value.trim());
+            csvRowArray.push(`${firstInputVal}`);
+            csvRowArray.push(`${lastInputVal}`);
+            if (i % 2 === 1) {
+                const checkbox = fields.querySelector(`input[type="checkbox"]`);
+                csvRowArray.push(`${checkbox.checked}`);
+            }
+        }
+        csvArray.push(csvRowArray);
+        row++;
+    }
+
+    let csvContent = csvArray.join("\r\n");
+
+    let file = new File([csvContent], "download", {type: "text/csv"});
+    let exportUrl = URL.createObjectURL(file);
+    window.location.assign(exportUrl);
+    URL.revokeObjectURL(exportUrl);
+});
+
 generateBtn.addEventListener("click", e => {
     let row = 1;
     for (const maskHex in maskData) {
@@ -116,7 +210,7 @@ generateBtn.addEventListener("click", e => {
 });
 
 function drawImageToCanvas(e, canvas, ctx) {
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.onload = function (event) {
         const img = new Image();
         img.onload = function () {
@@ -158,7 +252,6 @@ function maskUploaded() {
         }
     }
 
-    document.getElementById("colorPanel").style.visibility = "visible";
     originalBtn.style.visibility = "visible";
 
     const oldMaskElements = document.querySelectorAll(".maskData");
@@ -178,7 +271,6 @@ function maskUploaded() {
     const eyedropper = document.createElement("img");
     eyedropper.classList.add("eyedropper");
     eyedropper.src = "eye-dropper-solid.svg";
-    if (!originalExists) eyedropper.style.visibility = "hidden";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -432,16 +524,7 @@ function originalUploaded() {
     modalCanvas.width = originalCanvas.width;
     modalCanvas.height = originalCanvas.height;
     modalCtx.drawImage(originalCanvas, 0, 0);
-
-    if (!originalExists) {
-        originalExists = true;
-        const eyedroppers = document.querySelectorAll(".eyedropper");
-        for (let eyedropper of eyedroppers) {
-            eyedropper.style.visibility = "visible";
-        }
-        generateBtn.style.visibility = "visible";
-    }
-
+    document.getElementById("colorPanel").style.visibility = "visible";
     floydSteinberg();
 }
 
