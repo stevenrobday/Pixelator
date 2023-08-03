@@ -1,210 +1,212 @@
 * {
-    margin: 0;
+  margin: 0;
 }
 
 .columns {
-    display: flex;
+  display: flex;
 }
 
 .colMain {
-    width: 33%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 60vh;
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 60vh;
 }
 
-input[type=file] {
-    display: none;
+input[type="file"] {
+  display: none;
 }
 
 button {
-    background: #00d5ff;
-    color: #000;
-    border: none;
-    font-size: 16px;
-    margin: 10px auto;
+  background: #00d5ff;
+  color: #000;
+  border: none;
+  font-size: 16px;
+  margin: 10px auto;
 }
 
 canvas {
-    width: 60%;
-    height: auto;
+  width: 60%;
+  height: auto;
 }
 
 #ditheredCanvas {
-    display: none;
+  display: none;
 }
 
 #pixelatedSpacer {
-    height: 38px;
-    width: 100%;
+  height: 38px;
+  width: 100%;
 }
 
 #colorPanel {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
-    height: 40vh;
-    visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  height: 40vh;
+  visibility: hidden;
 }
 
 #panelHeader {
-    display: flex;
-    width: calc(90% - 16px);
-    padding-right: 16px;
+  display: flex;
+  width: calc(90% - 16px);
+  padding-right: 16px;
 }
 
 #colorRanges {
-    display: flex;
-    width: 90%;
-    overflow-y: scroll;
-    margin-bottom: 10px;
+  display: flex;
+  width: 90%;
+  overflow-y: scroll;
+  margin-bottom: 10px;
 }
 
 .colColorRanges {
-    display: flex;
-    flex-direction: column;
-    width: 13%;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 13%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .colColorRanges > div {
-    flex: 1 0 auto;
-    margin: 10px 0;
+  flex: 1 0 auto;
+  margin: 10px 0;
 }
 
-#colColorRanges_1, #header_1 {
-    width: 9%;
+#colColorRanges_1,
+#header_1 {
+  width: 9%;
 }
 
 .colorSquare {
-    width: 25px;
-    height: 25px;
-    border: black solid 1px;
-    border-radius: 5px;
+  width: 25px;
+  height: 25px;
+  border: black solid 1px;
+  border-radius: 5px;
 }
 
 .dither {
-    border-color: red;
+  border-color: red;
 }
 
 #black {
-    background-color: #000000;
+  background-color: #000000;
 }
 
 #blackDither {
-    background-color: #404040;
+  background-color: #404040;
 }
 
 #darkGray {
-    background-color: #808080;
+  background-color: #808080;
 }
 
 #darkGrayDither {
-    background-color: #A0A0A0;
+  background-color: #a0a0a0;
 }
 
 #lightGray {
-    background-color: #BFBFBF;
+  background-color: #bfbfbf;
 }
 
 #lightGrayDither {
-    background-color: #E0E0E0;
+  background-color: #e0e0e0;
 }
 
 #white {
-    background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .inputsWrapper {
-    display: flex;
-    width: 100%;
-    height: 27px;
+  display: flex;
+  width: 100%;
+  height: 27px;
 }
 
-input[type=number] {
-    width: 38px;
-    margin: auto 2px;
+input[type="number"] {
+  width: 38px;
+  margin: auto 2px;
 }
 
-input[type=number]::-webkit-inner-spin-button {
-    cursor: pointer;
+input[type="number"]::-webkit-inner-spin-button {
+  cursor: pointer;
 }
 
 .eyedropper {
-    width: 22px;
-    height: 22px;
-    margin: auto 2px;
+  width: 22px;
+  height: 22px;
+  margin: auto 2px;
 }
 
 .eyedropper:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-input[type=checkbox] {
-    cursor: pointer;
-    align-self: center;
+input[type="checkbox"] {
+  cursor: pointer;
+  align-self: center;
 }
 
 .inputsWrapper input:first-child {
-    margin-left: 16px;
+  margin-left: 16px;
 }
 
 .inputsWrapper img:nth-child(2) {
-    margin-right: 4px;
+  margin-right: 4px;
 }
 
 .inputsWrapper :last-child {
-    margin-right: 16px;
+  margin-right: 16px;
 }
 
 #panelButtons {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 #panelButtons button {
-    margin: 0 20px;
+  margin: 0 20px;
 }
 
 #originalBtn {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 #originalSpacer {
-    height: 118px;
+  height: 118px;
 }
 
-#modalShade, #modalWrap {
-    display: none;
+#modalShade,
+#modalWrap {
+  display: none;
 }
 
 #modalShade {
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #00d5ff;
-    opacity: .8;
-    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #00d5ff;
+  opacity: 0.8;
+  position: fixed;
 }
 
 #modalWrap {
-    position: absolute;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
 }
 
 #modalCanvas {
-    height: 100vh;
-    width: auto;
+  height: 100vh;
+  width: auto;
 }
 
 #hoverPixelVal {
-    position: absolute;
-    color: red;
+  position: absolute;
+  color: red;
 }
